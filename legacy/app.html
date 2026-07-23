@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4JURIS Pessoas · Gestão de colaboradores</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+<div class="app" id="app">
+  <div class="scrim" id="scrim"></div>
+
+  <!-- ============ Sidebar ============ -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="logo-mark">4J</div>
+      <div class="logo-word"><b>4JURIS</b><span>Pessoas & Gestão</span></div>
+    </div>
+
+    <nav class="sidebar-scroll" id="sidebarNav">
+      <div class="nav-group">
+        <div class="nav-group-title">Visão geral</div>
+        <button class="nav-item" data-route="dashboard"></button>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-title">Gestão de pessoas</div>
+        <button class="nav-item" data-route="colaboradores"></button>
+        <button class="nav-item" data-route="setores"></button>
+        <button class="nav-item" data-route="cargos"></button>
+        <button class="nav-item" data-route="documentos"></button>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-title">Suporte</div>
+        <button class="nav-item" data-route="central"></button>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-title">Administração</div>
+        <button class="nav-item" data-route="admin"></button>
+      </div>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="side-user" id="sideUser">
+        <div class="avatar sm" style="background:#0032D2">AD</div>
+        <div class="info"><b>Administrador</b><span>admin@4juris.com.br</span></div>
+        <span class="u-right u-muted" style="display:flex" id="logoutBtn" title="Sair"></span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ Main ============ -->
+  <div class="main">
+    <header class="topbar">
+      <button class="icon-btn menu-btn" id="menuBtn"></button>
+      <div class="topbar-title">
+        <div class="crumb" id="crumb">4JURIS Pessoas</div>
+        <h1 id="pageTitle">Dashboard</h1>
+      </div>
+      <div class="topbar-search search-field toolbar-search topbar-search">
+        <input class="input" id="globalSearch" type="search" placeholder="Buscar colaborador, setor..." autocomplete="off">
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="btnCentral" title="Central de dúvidas"></button>
+        <button class="icon-btn" id="btnBell" title="Notificações"><span class="ping"></span></button>
+        <button class="btn btn-primary" id="btnQuickAdd"></button>
+      </div>
+    </header>
+
+    <main class="content" id="content"><!-- render aqui --></main>
+  </div>
+</div>
+
+<!-- Modal + Toast hosts -->
+<div class="modal-overlay" id="modalOverlay"><div class="modal" id="modal"></div></div>
+<div class="toast-host" id="toastHost"></div>
+
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/store.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Central de Dúvidas | 4Juris</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F6F7FA;
+    --bg-card:#FFFFFF;
+    --ink:#171A2E;
+    --ink-soft:#40445C;
+    --muted:#6B7086;
+    --border:#E3E4EE;
+    --accent:#2F6F6B;
+    --accent-dark:#204F4C;
+    --accent-soft:#E3F0EE;
+    --gold:#B8862E;
+    --gold-soft:#F5EAD3;
+    --radius-lg:18px;
+    --radius-md:12px;
+    --shadow-card: 0 1px 2px rgba(23,26,46,.04), 0 10px 28px rgba(23,26,46,.05);
+    --shadow-card-hover: 0 4px 10px rgba(23,26,46,.06), 0 20px 40px rgba(23,26,46,.09);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:.001ms !important; transition-duration:.001ms !important;}
+  }
+
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  h1,h2,h3{
+    font-family:'Fraunces', Georgia, serif;
+    letter-spacing:-0.01em;
+    margin:0;
+  }
+
+  a{color:inherit;}
+
+  .mono{font-family:'IBM Plex Mono', monospace; letter-spacing:0.01em;}
+
+  /* ---------- Topbar ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:40;
+    background:rgba(246,247,250,.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
+  }
+  .topbar-inner{
+    max-width:1080px; margin:0 auto;
+    padding:16px 28px;
+    display:flex; align-items:center; gap:20px;
+    justify-content:space-between;
+  }
+  .brand{display:flex; align-items:center; gap:10px; cursor:pointer; user-select:none;}
+  .brand-mark{
+    width:34px; height:34px; border-radius:9px;
+    background:var(--ink);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .brand-mark svg{width:18px; height:18px;}
+  .brand-name{font-family:'Fraunces', serif; font-weight:600; font-size:17px; line-height:1.1;}
+  .brand-name span{display:block; font-family:'Inter',sans-serif; font-weight:500; font-size:11.5px; color:var(--muted); letter-spacing:.02em; margin-top:1px;}
+
+  .search-wrap{
+    flex:1; max-width:420px;
+    position:relative;
+  }
+  .search-wrap input{
+    width:100%;
+    padding:10px 14px 10px 38px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:var(--bg-card);
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    color:var(--ink);
+    outline:none;
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  .search-wrap input:focus{
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px var(--accent-soft);
+  }
+  .search-wrap svg{
+    position:absolute; left:12px; top:50%; transform:translateY(-50%);
+    width:16px; height:16px; color:var(--muted); pointer-events:none;
+  }
+  .search-kbd{
+    position:absolute; right:10px; top:50%; transform:translateY(-50%);
+    font-size:11px; color:var(--muted);
+    border:1px solid var(--border); border-radius:5px;
+    padding:2px 6px; background:var(--bg);
+    font-family:'IBM Plex Mono', monospace;
+  }
+
+  /* ---------- Layout shells ---------- */
+  .shell{max-width:1080px; margin:0 auto; padding:0 28px 96px;}
+  .view{display:none;}
+  .view.active{display:block;}
+
+  /* ---------- Home hero ---------- */
+  .hero{padding:64px 0 40px;}
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:12.5px; font-weight:600; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--accent-dark);
+    background:var(--accent-soft);
+    padding:6px 12px; border-radius:100px;
+    margin-bottom:18px;
+  }
+  .hero h1{font-size:42px; font-weight:600; line-height:1.15; max-width:640px;}
+  .hero p{
+    font-size:17px; color:var(--ink-soft); margin-top:14px; max-width:520px; line-height:1.55;
+  }
+
+  /* ---------- Section groups ---------- */
+  .group{margin-top:44px;}
+  .group-head{
+    display:flex; align-items:baseline; justify-content:space-between;
+    margin-bottom:18px; gap:12px;
+  }
+  .group-title{font-size:13px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; color:var(--muted);}
+  .group-count{font-size:12.5px; color:var(--muted); font-family:'IBM Plex Mono', monospace;}
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(230px, 1fr));
+    gap:16px;
+  }
+
+  .card{
+    background:var(--bg-card);
+    border:1px solid var(--border);
+    border-radius:var(--radius-lg);
+    padding:22px;
+    cursor:pointer;
+    box-shadow:var(--shadow-card);
+    transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    display:flex; flex-direction:column; gap:14px;
+    text-align:left;
+  }
+  .card:hover{transform:translateY(-3px); box-shadow:var(--shadow-card-hover); border-color:#D7D9E6;}
+  .card:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+  .card-icon{
+    width:42px; height:42px; border-radius:11px;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--accent-soft); color:var(--accent-dark);
+  }
+  .card-icon svg{width:21px; height:21px;}
+  .card h3{font-size:17px; font-weight:600;}
+  .card p{margin:0; font-size:13.5px; color:var(--muted); line-height:1.5;}
+  .card-arrow{
+    margin-top:auto; display:flex; align-items:center; gap:6px;
+    font-size:13px; font-weight:500; color:var(--accent-dark);
+  }
+  .card-arrow svg{width:14px; height:14px; transition:transform .15s ease;}
+  .card:hover .card-arrow svg{transform:translateX(3px);}
+
+  .card.soon{cursor:default; opacity:.6;}
+  .card.soon:hover{transform:none; box-shadow:var(--shadow-card); border-color:var(--border);}
+  .card.soon .card-icon{background:var(--bg); color:var(--muted);}
+  .soon-tag{
+    font-size:11px; font-weight:600; letter-spacing:.04em; text-transform:uppercase;
+    color:var(--gold); background:var(--gold-soft);
+    padding:3px 8px; border-radius:100px; display:inline-block; width:fit-content;
+  }
+
+  .empty-search{
+    padding:60px 20px; text-align:center; color:var(--muted);
+  }
+  .empty-search svg{width:32px; height:32px; margin-bottom:12px; opacity:.5;}
+
+  /* ---------- Article view ---------- */
+  .article-layout{
+    display:grid;
+    grid-template-columns:200px minmax(0,1fr);
+    gap:48px;
+    padding-top:36px;
+    align-items:start;
+  }
+  .back-link{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:13.5px; font-weight:500; color:var(--muted);
+    cursor:pointer; margin-bottom:22px; background:none; border:none; padding:0;
+    font-family:'Inter',sans-serif;
+  }
+  .back-link:hover{color:var(--ink);}
+  .back-link svg{width:14px; height:14px;}
+
+  .toc{position:sticky; top:88px;}
+  .toc-title{font-size:11.5px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; color:var(--muted); margin-bottom:14px;}
+  .toc-list{list-style:none; margin:0; padding:0; position:relative;}
+  .toc-list::before{
+    content:''; position:absolute; left:4px; top:4px; bottom:4px; width:1px; background:var(--border);
+  }
+  .toc-item{position:relative; padding:7px 0 7px 20px;}
+  .toc-item::before{
+    content:''; position:absolute; left:0px; top:50%; transform:translateY(-50%);
+    width:9px; height:9px; border-radius:50%;
+    background:var(--bg-card); border:2px solid var(--border);
+    transition:border-color .2s ease, background .2s ease;
+  }
+  .toc-item a{
+    font-size:13.5px; color:var(--muted); text-decoration:none; transition:color .15s ease;
+  }
+  .toc-item.active::before{border-color:var(--accent); background:var(--accent);}
+  .toc-item.active a{color:var(--ink); font-weight:600;}
+
+  .article-header{margin-bottom:8px; display:flex; gap:16px; align-items:flex-start;}
+  .article-icon{
+    width:50px; height:50px; border-radius:13px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--accent-soft); color:var(--accent-dark);
+  }
+  .article-icon svg{width:25px; height:25px;}
+  .article-header h1{font-size:30px; font-weight:600;}
+  .article-tag{font-size:13px; color:var(--muted); margin-top:4px;}
+
+  .article-body section{
+    margin-top:44px; scroll-margin-top:90px;
+  }
+  .article-body h2{font-size:20px; font-weight:600; margin-bottom:14px;}
+  .article-body p{font-size:15px; line-height:1.7; color:var(--ink-soft); margin:0 0 10px;}
+  .article-body ul{margin:0 0 10px; padding-left:20px; color:var(--ink-soft); font-size:15px; line-height:1.7;}
+  .article-body ul li{margin-bottom:4px;}
+
+  .steps{list-style:none; margin:0; padding:0; counter-reset:step;}
+  .steps li{
+    counter-increment:step;
+    position:relative;
+    padding:2px 0 20px 40px;
+    font-size:15px; line-height:1.6; color:var(--ink-soft);
+  }
+  .steps li:last-child{padding-bottom:0;}
+  .steps li::before{
+    content:counter(step);
+    position:absolute; left:0; top:0;
+    width:26px; height:26px; border-radius:8px;
+    background:var(--ink); color:#fff;
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px; font-weight:500;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .steps li::after{
+    content:''; position:absolute; left:12px; top:28px; bottom:0; width:1px;
+    background:var(--border);
+  }
+  .steps li:last-child::after{display:none;}
+
+  .callout{
+    background:var(--gold-soft);
+    border:1px solid #EAD9AE;
+    border-radius:var(--radius-md);
+    padding:16px 18px;
+    display:flex; gap:12px; align-items:flex-start;
+    margin-bottom:12px;
+  }
+  .callout svg{width:18px; height:18px; color:var(--gold); flex-shrink:0; margin-top:2px;}
+  .callout p{margin:0; color:#5C4415; font-size:14px; line-height:1.6;}
+
+  .obs-list{list-style:none; margin:0; padding:0;}
+  .obs-list li{
+    display:flex; gap:10px; align-items:flex-start;
+    font-size:15px; color:var(--ink-soft); line-height:1.6;
+    padding:9px 0; border-top:1px solid var(--border);
+  }
+  .obs-list li:first-child{border-top:none;}
+  .obs-list li svg{width:16px; height:16px; color:var(--accent); flex-shrink:0; margin-top:3px;}
+
+  .faq{border-top:1px solid var(--border);}
+  .faq-item{border-bottom:1px solid var(--border);}
+  .faq-q{
+    width:100%; text-align:left; background:none; border:none; cursor:pointer;
+    padding:16px 4px; display:flex; align-items:center; justify-content:space-between; gap:12px;
+    font-family:'Inter',sans-serif; font-size:15px; font-weight:500; color:var(--ink);
+  }
+  .faq-q svg{width:16px; height:16px; color:var(--muted); flex-shrink:0; transition:transform .2s ease;}
+  .faq-item.open .faq-q svg{transform:rotate(45deg);}
+  .faq-a{
+    max-height:0; overflow:hidden; transition:max-height .22s ease;
+  }
+  .faq-a p{padding:0 4px 16px; font-size:14.5px; color:var(--ink-soft); line-height:1.65; margin:0;}
+
+  .contact-strip{
+    margin-top:52px; padding:20px 22px;
+    border:1px solid var(--border); border-radius:var(--radius-md);
+    background:var(--bg-card);
+    display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+  }
+  .contact-strip p{margin:0; font-size:14px; color:var(--muted);}
+  .contact-strip a.btn{
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--ink); color:#fff; text-decoration:none;
+    padding:9px 16px; border-radius:9px; font-size:13.5px; font-weight:500;
+  }
+  .contact-strip a.btn svg{width:14px; height:14px;}
+
+  footer{
+    max-width:1080px; margin:0 auto; padding:40px 28px 60px;
+    color:var(--muted); font-size:13px; border-top:1px solid var(--border); margin-top:20px;
+  }
+
+  @media (max-width:760px){
+    .hero h1{font-size:30px;}
+    .search-wrap{max-width:none;}
+    .topbar-inner{flex-wrap:wrap;}
+    .article-layout{grid-template-columns:1fr;}
+    .toc{position:static; margin-bottom:8px; padding-bottom:20px; border-bottom:1px solid var(--border);}
+    .toc-list::before{display:none;}
+    .toc-list{display:flex; flex-wrap:wrap; gap:8px;}
+    .toc-item{padding:0;}
+    .toc-item::before{display:none;}
+    .toc-item a{
+      display:block; padding:6px 12px; border-radius:100px; border:1px solid var(--border); font-size:12.5px;
+    }
+    .toc-item.active a{background:var(--ink); color:#fff; border-color:var(--ink);}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand" id="brandHome">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/></svg>
+      </div>
+      <div class="brand-name">Central de Dúvidas<span>4Juris</span></div>
+    </div>
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input id="searchInput" type="text" placeholder="Buscar um assunto..." autocomplete="off">
+      <span class="search-kbd">/</span>
+    </div>
+  </div>
+</div>
+
+<div class="shell">
+
+  <!-- HOME VIEW -->
+  <div class="view active" id="view-home">
+    <div class="hero">
+      <span class="eyebrow">Central interna 4Juris</span>
+      <h1>Encontre rapidamente as informações que você precisa.</h1>
+      <p>Tutoriais objetivos sobre benefícios e processos do dia a dia — sem precisar abrir um chamado com o RH.</p>
+    </div>
+
+    <div id="groupsContainer"></div>
+
+    <div class="empty-search" id="emptyState" style="display:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <div>Nenhum assunto encontrado. Tente outro termo ou fale com o RH.</div>
+    </div>
+  </div>
+
+  <!-- ARTICLE VIEW -->
+  <div class="view" id="view-article">
+    <div class="article-layout">
+      <nav class="toc" id="tocNav">
+        <div class="toc-title">Nesta página</div>
+        <ul class="toc-list" id="tocList"></ul>
+      </nav>
+      <div>
+        <button class="back-link" id="backBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          Voltar para a Central
+        </button>
+        <div class="article-header">
+          <div class="article-icon" id="articleIcon"></div>
+          <div>
+            <h1 id="articleTitle"></h1>
+            <div class="article-tag" id="articleTag"></div>
+          </div>
+        </div>
+        <div class="article-body" id="articleBody"></div>
+
+        <div class="contact-strip">
+          <p>Não encontrou a resposta que precisava?</p>
+          <a class="btn" href="mailto:rh@4juris.com.br">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M4 6l8 7 8-7"/></svg>
+            Falar com o RH
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Central de Dúvidas · 4Juris — conteúdo mantido pelo RH. Última atualização: julho de 2026.
+</footer>
+
+<script>
+/* ============================================================
+   CONTEÚDO DA CENTRAL — edite somente esta seção.
+   Cada item de CONTENT vira um cartão na home e uma página própria.
+   Para adicionar um novo assunto no futuro, copie um objeto existente,
+   ajuste os campos e inclua o "id" na lista de um dos GROUPS abaixo
+   (ou crie um novo grupo). Nada mais no layout precisa mudar.
+   ============================================================ */
+
+const ICONS = {
+  heart: '<path d="M12 20s-7-4.6-9.3-9.1C1.2 8 2.3 4.8 5.4 4.1 7.6 3.6 9.8 4.6 12 7.2 14.2 4.6 16.4 3.6 18.6 4.1c3.1.7 4.2 3.9 2.7 6.8C19 15.4 12 20 12 20z"/>',
+  cross: '<path d="M12 3v18M3 12h18" stroke-linecap="round"/><circle cx="12" cy="12" r="9"/>',
+  star: '<path d="M12 3l2.6 5.8L21 9.6l-4.5 4.2L17.7 21 12 17.6 6.3 21l1.2-7.2L3 9.6l6.4-.8L12 3z"/>',
+  building: '<path d="M6 21V4a1 1 0 011-1h10a1 1 0 011 1v17M6 21h12M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1M10 21v-4h4v4"/>',
+  receipt: '<path d="M6 3h12v18l-2.5-1.5L13 21l-1-1.5L11 21l-2.5-1.5L6 21V3z"/><path d="M9 8h6M9 12h6" stroke-linecap="round"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2" stroke-linecap="round"/>',
+  doc: '<path d="M7 3h7l4 4v14H7V3z"/><path d="M14 3v4h4M9 12h6M9 16h6" stroke-linecap="round"/>',
+  shield: '<path d="M12 3l7 3v6c0 5-3.5 8-7 9-3.5-1-7-4-7-9V6l7-3z"/>',
+  gear: '<circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M3 12h2M19 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" stroke-linecap="round"/>',
+  users: '<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 8a3 3 0 110-6M14 14c2.8.4 5 2.8 5 5.8" stroke-linecap="round"/>',
+  wallet: '<path d="M3 7a2 2 0 012-2h13a1 1 0 011 1v13a1 1 0 01-1 1H5a2 2 0 01-2-2V7z"/><path d="M16 12h3v3h-3a1.5 1.5 0 010-3z"/>'
+};
+
+function icon(name){ return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]}</svg>`; }
+
+const CONTENT = {
+  wellhub: {
+    icon: 'heart', title: 'Wellhub', tag: 'Benefícios & Bem-estar',
+    summary: 'Acesso a academias e apps de atividade física.',
+    oQueE: 'O Wellhub é o benefício de bem-estar físico oferecido pela 4Juris, dando acesso a uma rede de academias, estúdios e aplicativos de atividade física por um plano mensal.',
+    comoFunciona: [
+      'Depois que o RH libera o benefício para você, o Wellhub envia um convite por e-mail para o endereço informado ao RH.',
+      'A ativação é feita pelo próprio colaborador, direto no e-mail recebido — não é necessário nenhum cadastro manual adicional.'
+    ],
+    passoAPasso: [
+      'Abra o e-mail de convite enviado pelo Wellhub.',
+      'Clique no link de ativação e conclua o seu cadastro.',
+      'Baixe o aplicativo Wellhub no seu celular.',
+      'Faça login usando o mesmo e-mail informado ao RH.',
+      'Escolha o plano que melhor atende às suas necessidades.'
+    ],
+    observacoes: [
+      'Verifique a caixa de spam ou lixo eletrônico se o convite não aparecer na caixa de entrada.',
+      'Confirme com o RH se o e-mail cadastrado está correto.',
+      'Se o convite não for localizado após essas checagens, entre em contato com o RH para verificar o envio.'
+    ],
+    faq: [
+      { q: 'Não recebi o e-mail de convite, o que faço?', a: 'Primeiro verifique a caixa de spam. Se não encontrar, confirme com o RH se o e-mail informado está correto e peça para verificarem o envio do convite.' },
+      { q: 'Preciso usar o mesmo e-mail cadastrado no RH?', a: 'Sim. O convite chega nesse e-mail e o login do aplicativo deve ser feito com o mesmo endereço.' },
+      { q: 'Quando o benefício fica disponível para mim?', a: 'Assim que o RH libera o seu acesso, o convite é enviado automaticamente por e-mail.' }
+    ]
+  },
+
+  avus: {
+    icon: 'cross', title: 'Avus', tag: 'Benefícios & Bem-estar',
+    summary: 'Clube de benefícios com descontos em saúde.',
+    oQueE: 'A Avus não é um plano de saúde, e sim um clube de benefícios que oferece descontos e acesso facilitado a serviços de saúde: telemedicina, plantão médico 24h, consultas presenciais, exames, atendimento odontológico e descontos em farmácias parceiras.',
+    comoFunciona: [
+      'Após o RH realizar o seu cadastro, a Avus libera o benefício — esse processo pode levar até 7 dias.',
+      'Telemedicina: acesse o aplicativo, escolha a especialidade desejada e agende sua consulta online.',
+      'Plantão 24 horas: utilize o atendimento imediato com clínico geral direto pelo aplicativo.',
+      'Consultas, exames e odontologia: localize no aplicativo a clínica, laboratório ou consultório credenciado e agende.',
+      'Farmácias parceiras: basta ir a uma farmácia parceira, informar que possui o benefício Avus e apresentar o CPF no caixa. Aceito em redes como Drogasil, Droga Raia, Pague Menos, Drogaria São Paulo e Pacheco.'
+    ],
+    passoAPasso: [
+      'Baixe o aplicativo Avus no seu celular.',
+      'Faça login utilizando o seu CPF.',
+      'Ative o seu cadastro seguindo as orientações do aplicativo.',
+      'Pronto — os benefícios da plataforma já estarão disponíveis.'
+    ],
+    observacoes: [
+      'A liberação do cadastro pode levar até 7 dias após o RH concluir o seu cadastro.',
+      'A Avus é um clube de benefícios com descontos, não um plano de saúde tradicional.'
+    ],
+    faq: [
+      { q: 'A Avus substitui um plano de saúde?', a: 'Não. A Avus é um clube de benefícios que oferece descontos e acesso facilitado a serviços de saúde, não um plano de saúde.' },
+      { q: 'Quanto tempo demora até eu conseguir usar o benefício?', a: 'Após o cadastro pelo RH, a liberação pela Avus pode levar até 7 dias.' },
+      { q: 'Como uso o desconto nas farmácias parceiras?', a: 'Informe no caixa que possui o benefício Avus e apresente o seu CPF. É aceito em redes como Drogasil, Droga Raia, Pague Menos, Drogaria São Paulo e Pacheco.' }
+    ]
+  },
+
+  starbem: {
+    icon: 'star', title: 'Starbem', tag: 'Benefícios & Bem-estar',
+    summary: 'Consultas online, psicologia e apoio emocional com IA.',
+    oQueE: 'A Starbem oferece acesso a consultas online com médicos e especialistas, atendimento com psicólogos e nutricionistas, uma assistente virtual de IA para acolhimento emocional (Stella) e descontos em exames e medicamentos com parceiros credenciados.',
+    comoFunciona: [
+      'Após o RH realizar o seu cadastro, o benefício é liberado para utilização automaticamente.',
+      'Agendamento de consultas: acesse o aplicativo, escolha a especialidade desejada e agende sua consulta por vídeo.',
+      'Assistente virtual Stella: disponível no aplicativo para apoio e acolhimento emocional a qualquer momento.',
+      'Descontos em parceiros: consulte no aplicativo os estabelecimentos conveniados para exames e medicamentos.'
+    ],
+    passoAPasso: [
+      'Baixe o aplicativo Starbem no seu celular.',
+      'Faça o cadastro utilizando o CPF ou o e-mail informado ao RH.',
+      'Confirme seus dados para ativar o acesso.',
+      'O sistema reconhece automaticamente o seu vínculo com a empresa e libera os benefícios disponíveis.'
+    ],
+    observacoes: [
+      'O vínculo com a 4Juris é reconhecido automaticamente pelo aplicativo após o cadastro.',
+      'A assistente Stella é um recurso de apoio, e não substitui atendimento profissional em situações de urgência.'
+    ],
+    faq: [
+      { q: 'Quais profissionais estão disponíveis pela Starbem?', a: 'Médicos, especialistas, psicólogos e nutricionistas, além da assistente virtual Stella para acolhimento emocional.' },
+      { q: 'O que é a Stella?', a: 'É a assistente virtual com IA da Starbem, disponível no aplicativo para apoio e acolhimento emocional a qualquer momento.' },
+      { q: 'Como faço login no aplicativo?', a: 'Usando o CPF ou o e-mail que foi informado ao RH no seu cadastro.' }
+    ]
+  },
+
+  cadastro_facial: {
+    icon: 'building', title: 'Cadastro Facial', tag: 'Administrativo',
+    summary: 'Como solicitar o acesso facial ao prédio.',
+    oQueE: 'O cadastro facial é o processo que libera o seu acesso à entrada do prédio por reconhecimento facial.',
+    comoFunciona: [
+      'O formulário de cadastro é solicitado ao RH.',
+      'Após o preenchimento e entrega, as informações são validadas e o cadastro facial é realizado.',
+      'Assim que a validação é concluída, o seu acesso ao prédio é liberado.'
+    ],
+    passoAPasso: [
+      'Solicite ao RH o formulário de cadastro.',
+      'Preencha todas as informações solicitadas.',
+      'Entregue o formulário na recepção do prédio.',
+      'Aguarde a validação das informações — o acesso é liberado em seguida.'
+    ],
+    observacoes: [
+      'O formulário deve ser solicitado diretamente ao RH.',
+      'A entrega é feita presencialmente, na recepção do prédio.'
+    ],
+    faq: [
+      { q: 'Onde consigo o formulário de cadastro facial?', a: 'Solicite diretamente ao RH.' },
+      { q: 'Para onde entrego o formulário preenchido?', a: 'Na recepção do prédio.' },
+      { q: 'Quando meu acesso é liberado?', a: 'Depois que as informações do formulário são validadas pelo RH.' }
+    ]
+  },
+
+  nota_fiscal: {
+    icon: 'receipt', title: 'Emissão de Nota Fiscal', tag: 'Administrativo',
+    summary: 'Passo a passo para emitir a NFS-e pelo Emissor Nacional.',
+    oQueE: 'A emissão da Nota Fiscal de Serviço (NFS-e) para a 4Juris é feita pelo portal Emissor Nacional, usando a razão social e o CNPJ da empresa.',
+    comoFunciona: [
+      'Razão Social: 4JURIS MARKETING LTDA',
+      'CNPJ: 46.937.316/0001-05',
+      'A nota deve ser emitida com a atividade econômica que melhor representa o serviço prestado à 4Juris. Em caso de dúvida, consulte o Financeiro antes de emitir.'
+    ],
+    atividades: [
+      { codigo: '73.19-0-03', nome: 'Marketing direto', principal: true },
+      { codigo: '73.19-0-04', nome: 'Consultoria em publicidade' },
+      { codigo: '73.19-0-02', nome: 'Promoção de vendas' },
+      { codigo: '63.19-4-00', nome: 'Portais, provedores de conteúdo e outros serviços de informação na internet' },
+      { codigo: '58.19-1-00', nome: 'Edição de cadastros, listas e de outros produtos gráficos' },
+      { codigo: '82.19-9-99', nome: 'Preparação de documentos e serviços especializados de apoio administrativo não especificados anteriormente' }
+    ],
+    passoAPasso: [
+      'Acesse o portal do Emissor Nacional e faça login.',
+      'Clique em "Nova NFS-e".',
+      'Informe os dados da empresa: Razão Social 4JURIS MARKETING LTDA e CNPJ 46.937.316/0001-05.',
+      'Preencha a descrição do serviço prestado.',
+      'Informe o valor conforme acordado em contrato.',
+      'Selecione a atividade econômica compatível com o serviço prestado.',
+      'Revise as informações e clique em "Emitir".',
+      'Faça o download do PDF da Nota Fiscal.',
+      'Envie o PDF para o Financeiro em financeiro@4juris.com.br.'
+    ],
+    observacoes: [
+      'Confira todos os dados antes de emitir a nota — ela não pode ser editada depois.',
+      'Guarde uma cópia da Nota Fiscal para seu controle.',
+      'Em caso de dúvidas sobre a emissão ou sobre qual atividade utilizar, fale com o Financeiro ou o RH antes de finalizar.'
+    ],
+    faq: [
+      { q: 'Qual atividade econômica eu devo escolher?', a: 'A que melhor representa o serviço que você prestou à 4Juris. Em caso de dúvida, consulte o Financeiro antes de emitir a nota.' },
+      { q: 'Para onde envio a nota depois de emitida?', a: 'Envie o PDF para financeiro@4juris.com.br.' },
+      { q: 'Onde acesso o portal para emitir a NFS-e?', a: 'Pelo Emissor Nacional, no link disponibilizado pelo Financeiro/RH.' }
+    ],
+    link: 'https://www.nfse.gov.br/EmissorNacional/Login?ReturnUrl=%2fEmissorNacional%2fDashboard'
+  }
+};
+
+/* Cartões "em breve" — sem página própria ainda.
+   Quando o conteúdo estiver pronto, mova o assunto para CONTENT acima
+   e para um dos GROUPS, no formato { id: 'chave' }. */
+const SOON = [
+  { icon:'clock',  title:'Solicitação de Férias' },
+  { icon:'wallet', title:'Reembolso' },
+  { icon:'shield', title:'Benefícios' },
+  { icon:'doc',    title:'Políticas Internas' },
+  { icon:'gear',   title:'Sistemas' },
+  { icon:'users',  title:'RH' },
+  { icon:'wallet', title:'Financeiro' }
+];
+
+const GROUPS = [
+  { title: 'Benefícios & Bem-estar', items: ['wellhub', 'avus', 'starbem'] },
+  { title: 'Administrativo', items: ['cadastro_facial', 'nota_fiscal'] }
+];
+
+/* ============================================================
+   Motor da página — não precisa editar daqui para baixo.
+   ============================================================ */
+
+function renderArticleBody(a){
+  let html = '';
+
+  html += `<section id="sec-oquee"><h2>O que é</h2><p>${a.oQueE}</p></section>`;
+
+  html += `<section id="sec-comofunciona"><h2>Como funciona</h2>`;
+  a.comoFunciona.forEach(p => html += `<p>${p}</p>`);
+  if (a.atividades){
+    html += `<div style="margin-top:16px; border:1px solid var(--border); border-radius:12px; overflow:hidden;">`;
+    a.atividades.forEach((at,i) => {
+      html += `<div style="display:flex; gap:14px; padding:12px 16px; align-items:center; ${i>0?'border-top:1px solid var(--border);':''} ${at.principal?'background:var(--accent-soft);':''}">
+        <span class="mono" style="font-size:13px; color:var(--accent-dark); min-width:82px;">${at.codigo}</span>
+        <span style="font-size:14px; color:var(--ink-soft);">${at.nome}</span>
+        ${at.principal ? '<span style="margin-left:auto; font-size:11px; font-weight:600; color:var(--accent-dark); background:#fff; padding:3px 8px; border-radius:100px;">PRINCIPAL</span>' : ''}
+      </div>`;
+    });
+    html += `</div>`;
+  }
+  if (a.link){
+    html += `<div class="callout" style="margin-top:16px;">${icon('doc')}<p>Portal para emissão: <a href="${a.link}" target="_blank" rel="noopener" style="color:var(--accent-dark); font-weight:600;">Emissor Nacional →</a></p></div>`;
+  }
+  html += `</section>`;
+
+  html += `<section id="sec-passoapasso"><h2>Passo a passo</h2><ol class="steps">`;
+  a.passoAPasso.forEach(s => html += `<li>${s}</li>`);
+  html += `</ol></section>`;
+
+  html += `<section id="sec-observacoes"><h2>Observações importantes</h2><ul class="obs-list">`;
+  a.observacoes.forEach(o => html += `<li>${icon('shield')}<span>${o}</span></li>`);
+  html += `</ul></section>`;
+
+  html += `<section id="sec-faq"><h2>Dúvidas frequentes</h2><div class="faq">`;
+  a.faq.forEach((f,i) => {
+    html += `<div class="faq-item" data-idx="${i}">
+      <button class="faq-q">${f.q}${icon('star').replace('<svg','<svg style="display:none"')}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+      <div class="faq-a"><p>${f.a}</p></div>
+    </div>`;
+  });
+  html += `</div></section>`;
+
+  return html;
+}
+
+function buildHome(){
+  const container = document.getElementById('groupsContainer');
+  container.innerHTML = '';
+
+  GROUPS.forEach(group => {
+    const wrap = document.createElement('div');
+    wrap.className = 'group';
+    wrap.dataset.group = '1';
+    const cardsHtml = group.items.map(id => {
+      const a = CONTENT[id];
+      return `<button class="card" data-id="${id}" data-search="${(a.title+' '+a.summary+' '+a.tag).toLowerCase()}">
+        <div class="card-icon">${icon(a.icon)}</div>
+        <h3>${a.title}</h3>
+        <p>${a.summary}</p>
+        <span class="card-arrow">Abrir tutorial
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      </button>`;
+    }).join('');
+    wrap.innerHTML = `
+      <div class="group-head">
+        <span class="group-title">${group.title}</span>
+        <span class="group-count">${group.items.length} artigo${group.items.length>1?'s':''}</span>
+      </div>
+      <div class="grid">${cardsHtml}</div>`;
+    container.appendChild(wrap);
+  });
+
+  const soonWrap = document.createElement('div');
+  soonWrap.className = 'group';
+  soonWrap.innerHTML = `
+    <div class="group-head">
+      <span class="group-title">Em breve</span>
+      <span class="group-count">${SOON.length} temas planejados</span>
+    </div>
+    <div class="grid">
+      ${SOON.map(s => `<div class="card soon">
+        <div class="card-icon">${icon(s.icon)}</div>
+        <h3>${s.title}</h3>
+        <span class="soon-tag">Em breve</span>
+      </div>`).join('')}
+    </div>`;
+  container.appendChild(soonWrap);
+
+  container.querySelectorAll('.card[data-id]').forEach(btn => {
+    btn.addEventListener('click', () => openArticle(btn.dataset.id));
+  });
+}
+
+function openArticle(id){
+  const a = CONTENT[id];
+  if (!a) return;
+  document.getElementById('articleIcon').innerHTML = icon(a.icon);
+  document.getElementById('articleTitle').textContent = a.title;
+  document.getElementById('articleTag').textContent = a.tag;
+  document.getElementById('articleBody').innerHTML = renderArticleBody(a);
+
+  const tocItems = [
+    {href:'#sec-oquee', label:'O que é'},
+    {href:'#sec-comofunciona', label:'Como funciona'},
+    {href:'#sec-passoapasso', label:'Passo a passo'},
+    {href:'#sec-observacoes', label:'Observações'},
+    {href:'#sec-faq', label:'Dúvidas frequentes'}
+  ];
+  document.getElementById('tocList').innerHTML = tocItems.map((t,i) =>
+    `<li class="toc-item${i===0?' active':''}"><a href="${t.href}">${t.label}</a></li>`
+  ).join('');
+
+  document.getElementById('view-home').classList.remove('active');
+  document.getElementById('view-article').classList.add('active');
+  window.scrollTo({top:0, behavior:'auto'});
+  location.hash = id;
+
+  attachFaqToggles();
+  attachScrollspy();
+}
+
+function goHome(){
+  document.getElementById('view-article').classList.remove('active');
+  document.getElementById('view-home').classList.add('active');
+  history.replaceState(null, '', location.pathname);
+  window.scrollTo({top:0, behavior:'auto'});
+}
+
+function attachFaqToggles(){
+  document.querySelectorAll('.faq-item').forEach(item => {
+    const q = item.querySelector('.faq-q');
+    const a = item.querySelector('.faq-a');
+    q.onclick = () => {
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(o => { o.classList.remove('open'); o.querySelector('.faq-a').style.maxHeight = null; });
+      if (!isOpen){
+        item.classList.add('open');
+        a.style.maxHeight = a.scrollHeight + 'px';
+      }
+    };
+  });
+}
+
+let observer;
+function attachScrollspy(){
+  if (observer) observer.disconnect();
+  const sections = document.querySelectorAll('.article-body section');
+  const links = document.querySelectorAll('.toc-item');
+  observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting){
+        links.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`.toc-item a[href="#${entry.target.id}"]`);
+        if (active) active.parentElement.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -55% 0px', threshold: 0 });
+  sections.forEach(s => observer.observe(s));
+
+  document.querySelectorAll('.toc-item a').forEach(a => {
+    a.onclick = (e) => {
+      e.preventDefault();
+      document.querySelector(a.getAttribute('href'))?.scrollIntoView({behavior:'smooth', block:'start'});
+    };
+  });
+}
+
+/* Busca */
+const searchInput = document.getElementById('searchInput');
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.trim().toLowerCase();
+  const cards = document.querySelectorAll('#groupsContainer .card[data-id]');
+  let visibleCount = 0;
+  cards.forEach(c => {
+    const match = q === '' || c.dataset.search.includes(q);
+    c.style.display = match ? '' : 'none';
+    if (match) visibleCount++;
+  });
+  document.querySelectorAll('#groupsContainer .group').forEach(g => {
+    const anyVisible = [...g.querySelectorAll('.card[data-id]')].some(c => c.style.display !== 'none');
+    const isSoonGroup = !g.querySelector('.card[data-id]');
+    g.style.display = (q !== '' && isSoonGroup) ? 'none' : (anyVisible || isSoonGroup ? '' : 'none');
+  });
+  document.getElementById('emptyState').style.display = (q !== '' && visibleCount === 0) ? 'block' : 'none';
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === '/' && document.activeElement !== searchInput){
+    e.preventDefault();
+    searchInput.focus();
+  }
+  if (e.key === 'Escape'){
+    searchInput.blur();
+  }
+});
+
+document.getElementById('backBtn').addEventListener('click', goHome);
+document.getElementById('brandHome').addEventListener('click', goHome);
+
+/* Inicialização */
+buildHome();
+const initialId = location.hash.replace('#','');
+if (initialId && CONTENT[initialId]) openArticle(initialId);
+</script>
+</body>
+</html>

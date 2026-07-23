@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-line;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-surface-3 text-ink font-sans antialiased;
+    font-feature-settings: 'ss01';
+  }
+  ::selection {
+    @apply bg-brand text-white;
+  }
+  /* Scrollbars */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.platinum') transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: theme('colors.platinum');
+    border-radius: 20px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background: theme('colors.muted.2');
+    background-clip: content-box;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-surface border border-line rounded-2xl shadow-xs;
+  }
+  .input {
+    @apply w-full h-11 px-3.5 rounded-xl border border-line-strong bg-surface text-[13.5px]
+           text-ink placeholder:text-muted-2 outline-none transition
+           focus:border-brand focus:ring-4 focus:ring-brand-100;
+  }
+  .label {
+    @apply block text-[12.5px] font-semibold text-ink-2 mb-1.5;
+  }
+  .chip {
+    @apply inline-flex items-center gap-2 text-[12.5px] font-medium text-ink-2
+           px-3 py-1.5 rounded-full border border-line bg-surface cursor-pointer
+           transition hover:border-line-strong;
+  }
+  .chip-active {
+    @apply bg-ink text-white border-ink;
+  }
+}
+
+/* Grade tecnológica reutilizável (login / heros) */
+.tech-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
