@@ -3,21 +3,48 @@ import { useStore } from '@/lib/store'
 import { PageHeader, Card, StatCard, Badge, Button, Field, Icon, EmptyState } from '@/components/ui'
 import { Modal } from '@/components/Modal'
 import { toast } from '@/components/toast'
-import { brl, fmtDate, STATUS_SOLIC, cn } from '@/lib/utils'
+import { brl, fmtDate, STATUS_SOLIC, cn, podeVerReembolsosView } from '@/lib/utils'
+import ReembolsosAdmin from './ReembolsosAdmin'
 
 const CATEGORIAS = ['Software & Ferramentas', 'Viagem & Deslocamento', 'Alimentação', 'Material de escritório', 'Cursos & Educação', 'Outros']
+const ADMIN_REEMB = ['admin', 'rh', 'diretoria']
 
+/** Página role-aware: admin/RH gerenciam todos os reembolsos; podem ver como colaborador. */
 export default function Reembolsos() {
+  const papel = useStore((s) => s.currentUser().papel)
+  const setPreview = useStore((s) => s.setPreview)
+  if (ADMIN_REEMB.includes(papel)) return <ReembolsosAdmin onVerColaborador={() => setPreview(true)} />
+  return <ReembolsosColaborador />
+}
+
+function ReembolsosColaborador() {
   const user = useStore((s) => s.currentUser())
+  const setores = useStore((s) => s.setores)
+  const preview = useStore((s) => s.previewColaborador)
   const reembolsos = useStore((s) => s.reembolsos.filter((r) => r.colaboradorId === user.id))
   const add = useStore((s) => s.addReembolso)
   const [open, setOpen] = useState(false)
   const [file, setFile] = useState<string>('')
   const [filtro, setFiltro] = useState('todos')
 
+  if (!podeVerReembolsosView(user, setores, preview)) {
+    return (
+      <>
+        <PageHeader title="Central de Reembolsos" subtitle="Solicite, anexe comprovantes e acompanhe suas despesas." />
+        <Card>
+          <EmptyState
+            icon="Lock"
+            title="Acesso restrito às lideranças"
+            desc="No seu setor, apenas lideranças podem visualizar e solicitar reembolsos. Fale com a liderança do seu time ou com o RH em caso de dúvida."
+          />
+        </Card>
+      </>
+    )
+  }
+
   const total = reembolsos.reduce((a, r) => a + r.valor, 0)
   const pendentes = reembolsos.filter((r) => r.status === 'pendente')
-  const aprovados = reembolsos.filter((r) => r.status === 'aprovado' || r.status === 'pago')
+  const aprovados = reembolsos.filter((r) => r.status === 'aprovado' || r.status === 'pagamento' || r.status === 'pago')
 
   const lista = filtro === 'todos' ? reembolsos : reembolsos.filter((r) => r.status === filtro)
 
@@ -43,7 +70,7 @@ export default function Reembolsos() {
       </div>
 
       <div className="flex gap-2 flex-wrap mb-5">
-        {['todos', 'pendente', 'aprovado', 'pago', 'recusado'].map((f) => (
+        {['todos', 'pendente', 'aprovado', 'pagamento', 'pago', 'recusado'].map((f) => (
           <button key={f} onClick={() => setFiltro(f)} className={cn('chip capitalize', filtro === f && 'chip-active')}>
             {f === 'todos' ? 'Todos' : STATUS_SOLIC[f].label}
           </button>

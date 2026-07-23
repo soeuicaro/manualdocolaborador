@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import gsap from 'gsap'
 import { Eye, EyeOff, ArrowRight, ShieldCheck, Sparkles, Layers, Fingerprint } from 'lucide-react'
+import { Logo } from '@/components/ui'
 
 /* ------------------------------------------------------------------
    Fundo tecnológico: rede de partículas reativa ao mouse (canvas)
@@ -156,7 +157,7 @@ export default function Login() {
 
         {/* topo */}
         <div className="relative z-10 flex items-center gap-3">
-          <div className="h-[42px] w-[42px] rounded-xl bg-brand flex items-center justify-center font-extrabold text-[16px] tracking-tighter shadow-brand">4J</div>
+          <Logo size={42} />
           <div className="leading-none">
             <div className="text-[17px] font-extrabold tracking-tight">4JURIS</div>
             <div className="text-[11px] text-[#8592a0] mt-1 font-medium">Pessoas & Gestão</div>
@@ -198,7 +199,7 @@ export default function Login() {
       <div ref={formRef} className="flex items-center justify-center p-6 sm:p-10 bg-surface">
         <form onSubmit={submit} className="gsap-form w-full max-w-[380px]">
           <div className="flex lg:hidden items-center gap-3 mb-8">
-            <div className="h-[42px] w-[42px] rounded-xl bg-brand flex items-center justify-center text-white font-extrabold text-[16px] tracking-tighter shadow-brand">4J</div>
+            <Logo size={42} />
             <div className="leading-none">
               <div className="text-[17px] font-extrabold text-ink tracking-tight">4JURIS</div>
               <div className="text-[11px] text-muted mt-1 font-medium">Pessoas & Gestão</div>

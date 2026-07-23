@@ -73,8 +73,71 @@ export const STATUS_SOLIC: Record<string, { label: string; tone: string }> = {
   aprovado: { label: 'Aprovado', tone: 'success' },
   recusado: { label: 'Recusado', tone: 'danger' },
   pago: { label: 'Pago', tone: 'brand' },
-  aguardando: { label: 'Aguardando', tone: 'neutral' },
+  aguardando: { label: 'Aguardando envio', tone: 'neutral' },
   enviada: { label: 'Enviada', tone: 'brand' },
   aprovada: { label: 'Aprovada', tone: 'success' },
+  pagamento: { label: 'Aguardando pagamento', tone: 'warning' },
+  paga: { label: 'Paga', tone: 'brand' },
   atrasada: { label: 'Atrasada', tone: 'danger' },
+}
+
+/** Etapas da NF em ordem, para Kanban e progresso. */
+export const NF_ETAPAS: { key: string; titulo: string; icon: string; tone: string }[] = [
+  { key: 'aguardando', titulo: 'Falta enviar', icon: 'FileClock', tone: 'neutral' },
+  { key: 'enviada', titulo: 'Enviadas', icon: 'Send', tone: 'brand' },
+  { key: 'aprovada', titulo: 'Aprovadas', icon: 'FileCheck2', tone: 'success' },
+  { key: 'pagamento', titulo: 'Aguardando pagamento', icon: 'Landmark', tone: 'warning' },
+  { key: 'paga', titulo: 'Pagas', icon: 'BadgeCheck', tone: 'brand' },
+]
+
+/** Etapas de reembolso em ordem, para Kanban e gestão. */
+export const REEMBOLSO_ETAPAS: { key: string; titulo: string; icon: string; tone: string }[] = [
+  { key: 'pendente', titulo: 'Pendentes', icon: 'Clock', tone: 'warning' },
+  { key: 'aprovado', titulo: 'Aprovados', icon: 'CheckCircle2', tone: 'success' },
+  { key: 'pagamento', titulo: 'Aguardando pagamento', icon: 'Landmark', tone: 'warning' },
+  { key: 'pago', titulo: 'Pagos', icon: 'BadgeCheck', tone: 'brand' },
+  { key: 'recusado', titulo: 'Recusados', icon: 'XCircle', tone: 'danger' },
+]
+
+/** Status de tarefas de gamificação (Kanban). */
+export const STATUS_TAREFA: Record<string, { label: string; tone: string }> = {
+  disponivel: { label: 'Disponível', tone: 'neutral' },
+  andamento: { label: 'Em andamento', tone: 'brand' },
+  aprovacao: { label: 'Aguardando aprovação', tone: 'warning' },
+  concluida: { label: 'Concluída', tone: 'success' },
+}
+
+export const REGIME_LABEL: Record<string, string> = {
+  PJ: 'Pessoa Jurídica (PJ)',
+  CLT: 'CLT',
+  autonomo: 'Autônomo',
+}
+
+interface SetorLike { id: string; liderancaIds: string[]; reembolsoApenasLideranca: boolean }
+interface ColabLike { id: string; setorId: string; papel: string }
+
+/** É liderança do próprio setor (ou papel de gestão global)? */
+export function isLideranca(user: ColabLike, setores: SetorLike[]): boolean {
+  if (['gestor', 'rh', 'admin', 'diretoria'].includes(user.papel)) return true
+  const setor = setores.find((s) => s.id === user.setorId)
+  return !!setor?.liderancaIds.includes(user.id)
+}
+
+/** Pode ver/solicitar reembolsos? Respeita a restrição do setor. */
+export function podeVerReembolsos(user: ColabLike, setores: SetorLike[]): boolean {
+  if (['rh', 'admin', 'diretoria'].includes(user.papel)) return true
+  const setor = setores.find((s) => s.id === user.setorId)
+  if (!setor?.reembolsoApenasLideranca) return true
+  return isLideranca(user, setores)
+}
+
+/** No modo "ver como colaborador" (preview), a pessoa é tratada como colaborador comum,
+    perdendo os privilégios de liderança do setor. */
+export function ehLideranca(user: ColabLike, setores: SetorLike[], preview: boolean): boolean {
+  return !preview && isLideranca(user, setores)
+}
+export function podeVerReembolsosView(user: ColabLike, setores: SetorLike[], preview: boolean): boolean {
+  if (!preview) return podeVerReembolsos(user, setores)
+  const setor = setores.find((s) => s.id === user.setorId)
+  return !setor?.reembolsoApenasLideranca
 }

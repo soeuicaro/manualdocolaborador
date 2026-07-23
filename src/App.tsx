@@ -18,6 +18,9 @@ import Ausencias from '@/pages/Ausencias'
 import Manual from '@/pages/Manual'
 import CentralDuvidas from '@/pages/CentralDuvidas'
 import Admin from '@/pages/Admin'
+import Assistente from '@/pages/Assistente'
+import Gestor from '@/pages/Gestor'
+import RH from '@/pages/RH'
 
 export function App() {
   return (
@@ -40,13 +43,13 @@ export function App() {
           {/* Módulos scaffoldados (roadmap pronto p/ construir) */}
           <Route path="/manual" element={<Manual />} />
           <Route path="/faq" element={<CentralDuvidas />} />
-          <Route path="/assistente" element={<ModuleScaffold />} />
+          <Route path="/assistente" element={<Assistente />} />
           <Route path="/treinamentos" element={<ModuleScaffold />} />
           <Route path="/feedback" element={<ModuleScaffold />} />
           <Route path="/onboarding" element={<ModuleScaffold />} />
           <Route path="/offboarding" element={<ModuleScaffold />} />
-          <Route path="/gestor" element={<ModuleScaffold />} />
-          <Route path="/rh" element={<ModuleScaffold />} />
+          <Route path="/gestor" element={<Gestor />} />
+          <Route path="/rh" element={<RH />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/seguranca" element={<ModuleScaffold />} />
         </Route>

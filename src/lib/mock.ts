@@ -11,12 +11,12 @@ const cor = (i: number) => PALETTE[i % PALETTE.length]
 
 export function seed(): DB {
   const setores: DB['setores'] = [
-    { id: 's1', nome: 'Marketing', descricao: 'Prospecção, conteúdo e performance digital.', cor: '#0032D2', icon: 'Sparkles', gestorId: 'c1' },
-    { id: 's2', nome: 'Tecnologia', descricao: 'Produto, engenharia e infraestrutura.', cor: '#0891b2', icon: 'Cpu', gestorId: 'c4' },
-    { id: 's3', nome: 'Comercial', descricao: 'Vendas, parcerias e expansão de carteira.', cor: '#0f9d6b', icon: 'Target', gestorId: 'c6' },
-    { id: 's4', nome: 'Jurídico', descricao: 'Contratos, compliance e suporte jurídico.', cor: '#7c3aed', icon: 'Scale', gestorId: 'c8' },
-    { id: 's5', nome: 'Financeiro', descricao: 'Contas, notas fiscais e pagamentos PJ.', cor: '#c98a12', icon: 'Wallet', gestorId: null },
-    { id: 's6', nome: 'RH & Pessoas', descricao: 'Recrutamento, cultura e experiência do time.', cor: '#db2777', icon: 'HeartHandshake', gestorId: 'c9' },
+    { id: 's1', nome: 'Marketing', descricao: 'Prospecção, conteúdo e performance digital.', cor: '#0032D2', icon: 'Sparkles', gestorId: 'c1', liderancaIds: ['c1'], reembolsoApenasLideranca: false },
+    { id: 's2', nome: 'Tecnologia', descricao: 'Produto, engenharia e infraestrutura.', cor: '#0891b2', icon: 'Cpu', gestorId: 'c4', liderancaIds: ['c4'], reembolsoApenasLideranca: true },
+    { id: 's3', nome: 'Comercial', descricao: 'Vendas, parcerias e expansão de carteira.', cor: '#0f9d6b', icon: 'Target', gestorId: 'c6', liderancaIds: ['c6'], reembolsoApenasLideranca: false },
+    { id: 's4', nome: 'Jurídico', descricao: 'Contratos, compliance e suporte jurídico.', cor: '#7c3aed', icon: 'Scale', gestorId: 'c8', liderancaIds: ['c8'], reembolsoApenasLideranca: false },
+    { id: 's5', nome: 'Financeiro', descricao: 'Contas, notas fiscais e pagamentos PJ.', cor: '#c98a12', icon: 'Wallet', gestorId: null, liderancaIds: [], reembolsoApenasLideranca: false },
+    { id: 's6', nome: 'RH & Pessoas', descricao: 'Recrutamento, cultura e experiência do time.', cor: '#db2777', icon: 'HeartHandshake', gestorId: 'c9', liderancaIds: ['c9'], reembolsoApenasLideranca: false },
   ]
 
   const cargos: DB['cargos'] = [
@@ -42,7 +42,8 @@ export function seed(): DB {
     id, nome, email, telefone: tel, papel, setorId, cargoId, status,
     dataEntrada: entrada, nascimento: nasc, cidade, uf, razaoSocial: razao, cnpj,
     remuneracao: valor, tipoContrato: 'mensalista', avatarCor: cor(parseInt(id.slice(1)) || 1),
-    banco: 'Nubank', agencia: '0001', conta: '12345-6', pixChave: email,
+    senha: 'mudar@123', regime: 'PJ', cpf: '000.000.000-00',
+    banco: 'Nubank', agencia: '0001', conta: '12345-6', pixTipo: 'CNPJ', pixChave: cnpj,
     emergenciaNome: 'Contato de emergência', emergenciaTelefone: '(31) 90000-0000', emergenciaParentesco: 'Familiar',
     pontos, nivel, streak, badges,
   })
@@ -59,6 +60,9 @@ export function seed(): DB {
     mkColab('c9', 'Juliana Prado', 'juliana.prado@4juris.com.br', '(31) 99456-7781', 'rh', 's6', 'g11', 'ativo', '2023-03-10', '1995-07-08', 'Belo Horizonte', 'MG', 'JP Consultoria RH ME', '47.330.229/0001-70', 7100, 1890, 5, 7, ['b1', 'b2', 'b6']),
     mkColab('c10', 'Thiago Barros', 'thiago.barros@4juris.com.br', '(51) 98871-3320', 'colaborador', 's2', 'g6', 'recesso', '2022-09-01', '1993-01-14', 'Porto Alegre', 'RS', 'TB Design Studio ME', '43.887.552/0001-16', 8300, 1450, 4, 0, ['b1', 'b3']),
   ]
+  // Variação de regimes de contratação (PJ é o padrão do factory)
+  Object.assign(colaboradores.find((c) => c.id === 'c9')!, { regime: 'CLT', cpf: '118.442.907-03', razaoSocial: '', cnpj: '', pixTipo: 'CPF', pixChave: '118.442.907-03' })
+  Object.assign(colaboradores.find((c) => c.id === 'c7')!, { regime: 'autonomo', cpf: '204.771.338-90', razaoSocial: '', cnpj: '', pixTipo: 'E-mail', pixChave: 'ana.lima@4juris.com.br' })
 
   const hoje = '2026-07-23'
   const reembolsos: DB['reembolsos'] = [
@@ -66,16 +70,23 @@ export function seed(): DB {
     { id: 'r2', colaboradorId: 'c1', categoria: 'Viagem & Deslocamento', descricao: 'Uber reunião cliente', valor: 68.9, data: '2026-07-18', status: 'pendente', comprovante: 'uber.pdf', criadoEm: '2026-07-18' },
     { id: 'r3', colaboradorId: 'c1', categoria: 'Alimentação', descricao: 'Almoço de equipe', valor: 210.5, data: '2026-06-28', status: 'pago', comprovante: 'restaurante.jpg', criadoEm: '2026-06-28', aprovadorId: 'c9' },
     { id: 'r4', colaboradorId: 'c1', categoria: 'Material de escritório', descricao: 'Monitor 27"', valor: 1290, data: '2026-06-15', status: 'recusado', comprovante: 'monitor.pdf', criadoEm: '2026-06-15', aprovadorId: 'c9' },
-    { id: 'r5', colaboradorId: 'c2', categoria: 'Cursos & Educação', descricao: 'Curso de tráfego pago', valor: 890, data: '2026-07-05', status: 'aprovado', criadoEm: '2026-07-05', aprovadorId: 'c9' },
+    { id: 'r5', colaboradorId: 'c2', categoria: 'Cursos & Educação', descricao: 'Curso de tráfego pago', valor: 890, data: '2026-07-05', status: 'pagamento', criadoEm: '2026-07-05', aprovadorId: 'c9', aprovadoEm: '2026-07-08' },
+    { id: 'r6', colaboradorId: 'c4', categoria: 'Software & Ferramentas', descricao: 'Licença JetBrains anual', valor: 1290, data: '2026-07-12', status: 'pendente', comprovante: 'jetbrains.pdf', criadoEm: '2026-07-12' },
+    { id: 'r7', colaboradorId: 'c6', categoria: 'Viagem & Deslocamento', descricao: 'Deslocamento cliente Rio', valor: 430, data: '2026-07-15', status: 'pendente', comprovante: 'passagem.pdf', criadoEm: '2026-07-15' },
   ]
 
+  // Prazo de envio: dia 22 · Pagamento: dia 25
   const notas: DB['notas'] = colaboradores.slice(0, 8).map((c, i) => ({
     id: `n${i + 1}`, colaboradorId: c.id, competencia: '2026-07', valor: c.remuneracao,
     status: i % 3 === 0 ? 'enviada' : i % 3 === 1 ? 'aguardando' : 'aprovada',
-    prazo: '2026-07-28', enviadaEm: i % 3 === 0 ? '2026-07-06' : undefined,
+    prazo: '2026-07-22', pagamentoEm: '2026-07-25',
+    enviadaEm: i % 3 === 0 ? '2026-07-06' : undefined,
+    aprovadorId: i % 3 === 2 ? 'c9' : undefined, aprovadaEm: i % 3 === 2 ? '2026-07-09' : undefined,
   }))
-  notas.push({ id: 'n9', colaboradorId: 'c1', competencia: '2026-06', valor: 12980, status: 'aprovada', prazo: '2026-06-28', enviadaEm: '2026-06-05' })
-  notas.push({ id: 'n10', colaboradorId: 'c1', competencia: '2026-05', valor: 12980, status: 'aprovada', prazo: '2026-05-28', enviadaEm: '2026-05-04' })
+  // Uma nota de julho encaminhada ao financeiro (aguardando pagamento)
+  Object.assign(notas[4], { status: 'pagamento', enviadaEm: '2026-07-05', aprovadorId: 'c9', aprovadaEm: '2026-07-08' })
+  notas.push({ id: 'n9', colaboradorId: 'c1', competencia: '2026-06', valor: 12980, status: 'paga', prazo: '2026-06-22', pagamentoEm: '2026-06-25', enviadaEm: '2026-06-05', aprovadorId: 'c9', aprovadaEm: '2026-06-08', pagaEm: '2026-06-25' })
+  notas.push({ id: 'n10', colaboradorId: 'c1', competencia: '2026-05', valor: 12980, status: 'paga', prazo: '2026-05-22', pagamentoEm: '2026-05-25', enviadaEm: '2026-05-04', aprovadorId: 'c9', aprovadaEm: '2026-05-07', pagaEm: '2026-05-25' })
 
   const ausencias: DB['ausencias'] = [
     { id: 'a1', colaboradorId: 'c3', tipo: 'recesso', inicio: '2026-07-15', fim: '2026-07-29', dias: 15, motivo: 'Recesso anual', status: 'aprovado', criadoEm: '2026-06-20' },
@@ -85,10 +96,11 @@ export function seed(): DB {
   ]
 
   const comunicados: DB['comunicados'] = [
-    { id: 'm1', titulo: 'Nova política de reembolsos entra em vigor em agosto', resumo: 'Categorias e limites atualizados para 2026. Confira o que muda.', corpo: 'A partir de 01/08 passam a valer os novos limites por categoria de reembolso. Softwares e ferramentas até R$ 800/mês, cursos até R$ 1.500/semestre. O envio continua pelo sistema, na Central de Reembolsos.', categoria: 'Financeiro', autor: 'Financeiro 4JURIS', data: '2026-07-21', fixado: true, lidoPor: [] },
-    { id: 'm2', titulo: 'Happy hour de julho — sexta, 25/07', resumo: 'Comemoração dos resultados do trimestre. Presença confirmada?', corpo: 'Vamos celebrar o fechamento do trimestre! Sexta-feira, 25/07, a partir das 18h, no rooftop do escritório. Inscreva-se na aba Eventos.', categoria: 'Eventos', autor: 'RH & Pessoas', data: '2026-07-19', lidoPor: ['c1'] },
-    { id: 'm3', titulo: 'Prazo de envio das notas fiscais: até 28/07', resumo: 'Emita e envie sua NF-e pela Central de Notas Fiscais.', corpo: 'Lembrete: o prazo para envio das notas fiscais de julho é dia 28. Utilize a Central de Notas Fiscais para emitir e anexar. Dúvidas com o Assistente de RH.', categoria: 'Financeiro', autor: 'Financeiro 4JURIS', data: '2026-07-18', lidoPor: [] },
-    { id: 'm4', titulo: 'Nova trilha de aprendizagem: Marketing Jurídico', resumo: '6 módulos disponíveis agora em Treinamentos.', corpo: 'Está no ar a nova trilha de Marketing Jurídico, com 6 módulos e certificado. Acesse em Treinamentos e Desenvolvimento.', categoria: 'Novidades', autor: 'Academy 4JURIS', data: '2026-07-14', lidoPor: ['c1'] },
+    { id: 'm1', titulo: 'Nova política de reembolsos entra em vigor em agosto', resumo: 'Categorias e limites atualizados para 2026. Confira o que muda.', corpo: 'A partir de 01/08 passam a valer os novos limites por categoria de reembolso. Softwares e ferramentas até R$ 800/mês, cursos até R$ 1.500/semestre. O envio continua pelo sistema, na Central de Reembolsos.', categoria: 'Financeiro', autor: 'Financeiro 4JURIS', data: '2026-07-21', fixado: true, lidoPor: [], alvo: 'todos', setoresAlvo: [], usuariosAlvo: [] },
+    { id: 'm2', titulo: 'Happy hour de julho — sexta, 25/07', resumo: 'Comemoração dos resultados do trimestre. Presença confirmada?', corpo: 'Vamos celebrar o fechamento do trimestre! Sexta-feira, 25/07, a partir das 18h, no rooftop do escritório. Inscreva-se na aba Eventos.', categoria: 'Eventos', autor: 'RH & Pessoas', data: '2026-07-19', lidoPor: ['c1'], alvo: 'todos', setoresAlvo: [], usuariosAlvo: [] },
+    { id: 'm3', titulo: 'Prazo de envio das notas fiscais: até 22/07', resumo: 'Emita e envie sua NF-e pela Central de Notas Fiscais.', corpo: 'Lembrete: o prazo para envio das notas fiscais de julho é dia 22 (pagamento no dia 25). Utilize a Central de Notas Fiscais para emitir e anexar. Dúvidas com o Assistente de RH.', categoria: 'Financeiro', autor: 'Financeiro 4JURIS', data: '2026-07-18', lidoPor: [], alvo: 'todos', setoresAlvo: [], usuariosAlvo: [] },
+    { id: 'm4', titulo: 'Sprint de produto: foco em performance', resumo: 'Comunicado exclusivo do setor de Tecnologia.', corpo: 'Time de Tecnologia: nas próximas duas semanas o foco é performance e observabilidade. Alinhamento diário às 9h30.', categoria: 'Geral', autor: 'Diego Martins', data: '2026-07-15', lidoPor: [], alvo: 'setores', setoresAlvo: ['s2'], usuariosAlvo: [] },
+    { id: 'm5', titulo: 'Nova trilha de aprendizagem: Marketing Jurídico', resumo: '6 módulos disponíveis agora em Treinamentos.', corpo: 'Está no ar a nova trilha de Marketing Jurídico, com 6 módulos e certificado. Acesse em Treinamentos e Desenvolvimento.', categoria: 'Novidades', autor: 'Academy 4JURIS', data: '2026-07-14', lidoPor: ['c1'], alvo: 'todos', setoresAlvo: [], usuariosAlvo: [] },
   ]
 
   const eventos: DB['eventos'] = [
@@ -131,6 +143,14 @@ export function seed(): DB {
     { id: 'd4', titulo: 'Participe do Town Hall', descricao: 'Inscreva-se e participe do próximo Town Hall.', pontos: 100, progresso: 1, meta: 1, concluido: true },
   ]
 
+  const tarefas: DB['tarefas'] = [
+    { id: 'tk1', titulo: 'Publicar 3 posts no LinkedIn da 4JURIS', descricao: 'Produzir e agendar 3 posts sobre marketing jurídico alinhados ao calendário editorial.', pontos: 150, status: 'disponivel', responsavelId: null, criadaPor: 'c1', criadaEm: '2026-07-20' },
+    { id: 'tk2', titulo: 'Revisar landing page da campanha de agosto', descricao: 'Checar textos, CTAs e responsividade antes do go-live.', pontos: 200, status: 'disponivel', responsavelId: null, criadaPor: 'c1', criadaEm: '2026-07-21' },
+    { id: 'tk3', titulo: 'Documentar fluxo de deploy', descricao: 'Escrever o passo a passo do deploy no Notion do time.', pontos: 250, status: 'andamento', responsavelId: 'c5', criadaPor: 'c4', criadaEm: '2026-07-18', prazo: '2026-07-30' },
+    { id: 'tk4', titulo: 'Gravar vídeo de boas-vindas do time', descricao: 'Vídeo curto (até 1 min) para o onboarding de novos PJs.', pontos: 180, status: 'aprovacao', responsavelId: 'c2', criadaPor: 'c1', criadaEm: '2026-07-12', prova: 'boas-vindas.mp4', concluidaEm: '2026-07-22' },
+    { id: 'tk5', titulo: 'Concluir treinamento de LGPD', descricao: 'Finalizar os 5 módulos da trilha obrigatória de LGPD.', pontos: 300, status: 'concluida', responsavelId: 'c1', criadaPor: 'c9', criadaEm: '2026-07-01', prova: 'certificado-lgpd.pdf', aprovadaPor: 'c9', concluidaEm: '2026-07-16' },
+  ]
+
   const notificacoes: DB['notificacoes'] = [
     { id: 'no1', tipo: 'prazo', titulo: 'Prazo de NF se aproxima', texto: 'Envie sua nota fiscal de julho até 28/07.', data: '2026-07-22T09:00:00', lida: false, href: '/notas' },
     { id: 'no2', tipo: 'aprovacao', titulo: 'Reembolso aprovado', texto: 'Seu reembolso "Assinatura Figma" foi aprovado.', data: '2026-07-21T15:30:00', lida: false, href: '/reembolsos' },
@@ -145,5 +165,5 @@ export function seed(): DB {
     { id: 'doc3', colaboradorId: 'c1', nome: 'Certificado — Onboarding 4JURIS', tipo: 'Certificado', data: '2022-04-01', tamanho: '88 KB' },
   ]
 
-  return { colaboradores, setores, cargos, reembolsos, notas, ausencias, comunicados, eventos, beneficios, treinamentos, badges, desafios, notificacoes, documentos }
+  return { colaboradores, setores, cargos, reembolsos, notas, ausencias, comunicados, eventos, beneficios, treinamentos, badges, desafios, tarefas, notificacoes, documentos }
 }

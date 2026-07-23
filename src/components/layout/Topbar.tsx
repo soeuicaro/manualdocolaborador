@@ -4,7 +4,9 @@ import { useStore } from '@/lib/store'
 import { flatNav } from '@/lib/nav'
 import { Avatar, Icon } from '@/components/ui'
 import { nivelInfo, relTime, cn } from '@/lib/utils'
-import { Bell, Search, LogOut, Trophy } from 'lucide-react'
+import { Bell, Search, LogOut, Trophy, Eye, EyeOff } from 'lucide-react'
+
+const GESTAO = ['gestor', 'rh', 'admin', 'diretoria']
 
 const notifIcon: Record<string, string> = {
   aprovacao: 'CheckCircle2', recusa: 'XCircle', prazo: 'Clock', comunicado: 'Megaphone',
@@ -15,10 +17,14 @@ export function Topbar() {
   const location = useLocation()
   const navigate = useNavigate()
   const user = useStore((s) => s.currentUser())
+  const realPapel = useStore((s) => s.realUser().papel)
+  const preview = useStore((s) => s.previewColaborador)
+  const setPreview = useStore((s) => s.setPreview)
   const notifs = useStore((s) => s.notificacoes)
   const marcarTodasLidas = useStore((s) => s.marcarTodasLidas)
   const marcarNotifLida = useStore((s) => s.marcarNotifLida)
   const [openBell, setOpenBell] = useState(false)
+  const podeAlternar = GESTAO.includes(realPapel)
 
   const naoLidas = notifs.filter((n) => !n.lida).length
   const nivel = nivelInfo(user.pontos)
@@ -52,6 +58,19 @@ export function Topbar() {
       </div>
 
       <div className="flex items-center gap-2 ml-auto">
+        {/* Alternar visão (apenas gestão) */}
+        {podeAlternar && (
+          <button
+            onClick={() => setPreview(!preview)}
+            title={preview ? 'Sair da visão de colaborador' : 'Ver o portal como colaborador'}
+            className={cn('hidden sm:flex items-center gap-2 h-10 px-3 rounded-xl font-semibold text-[12.5px] border transition',
+              preview ? 'bg-ink text-white border-ink hover:bg-ink-soft' : 'bg-surface text-ink-2 border-line hover:bg-surface-2 hover:text-ink')}
+          >
+            {preview ? <EyeOff className="h-[17px] w-[17px]" /> : <Eye className="h-[17px] w-[17px]" />}
+            {preview ? 'Sair da visão' : 'Ver como colaborador'}
+          </button>
+        )}
+
         {/* Pontos */}
         <Link to="/experiencia" className="hidden sm:flex items-center gap-2 h-10 px-3 rounded-xl bg-brand-50 border border-brand-100 text-brand-700 font-bold text-[13px] hover:bg-brand-100 transition">
           <Trophy className="h-[17px] w-[17px]" />

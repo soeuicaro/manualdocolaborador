@@ -6,6 +6,11 @@ export type Papel = 'colaborador' | 'gestor' | 'rh' | 'admin' | 'diretoria'
 
 export type StatusColaborador = 'ativo' | 'ferias' | 'recesso' | 'pendente' | 'inativo'
 
+/** Regime de contratação. */
+export type Regime = 'PJ' | 'CLT' | 'autonomo'
+
+export type PixTipo = 'CNPJ' | 'CPF' | 'E-mail' | 'Telefone' | 'Aleatória'
+
 export interface Colaborador {
   id: string
   nome: string
@@ -20,15 +25,21 @@ export interface Colaborador {
   nascimento: string // ISO date
   cidade: string
   uf: string
+  // Acesso
+  senha: string
+  // Contratação
+  regime: Regime
+  cpf?: string
   // PJ
   razaoSocial: string
   cnpj: string
   remuneracao: number // mensal
   tipoContrato: 'mensalista' | 'por-projeto'
-  // Bancário
+  // Bancário / PIX (chave PIX associada ao CNPJ por padrão)
   banco?: string
   agencia?: string
   conta?: string
+  pixTipo?: PixTipo
   pixChave?: string
   // Emergência
   emergenciaNome?: string
@@ -48,6 +59,10 @@ export interface Setor {
   cor: string
   icon: string
   gestorId: string | null
+  /** IDs de colaboradores com papel de liderança no setor. */
+  liderancaIds: string[]
+  /** Se true, apenas lideranças do setor podem ver/solicitar reembolsos. */
+  reembolsoApenasLideranca: boolean
 }
 
 export interface Cargo {
@@ -57,7 +72,7 @@ export interface Cargo {
   nivel: 'Júnior' | 'Pleno' | 'Sênior' | 'Especialista' | 'Liderança'
 }
 
-export type StatusSolicitacao = 'pendente' | 'aprovado' | 'recusado' | 'pago'
+export type StatusSolicitacao = 'pendente' | 'aprovado' | 'recusado' | 'pagamento' | 'pago'
 
 export interface Reembolso {
   id: string
@@ -70,9 +85,11 @@ export interface Reembolso {
   comprovante?: string // nome do arquivo (mock)
   criadoEm: string
   aprovadorId?: string
+  aprovadoEm?: string
+  pagoEm?: string
 }
 
-export type StatusNota = 'aguardando' | 'enviada' | 'aprovada' | 'atrasada'
+export type StatusNota = 'aguardando' | 'enviada' | 'aprovada' | 'pagamento' | 'paga' | 'atrasada'
 
 export interface NotaFiscal {
   id: string
@@ -81,8 +98,12 @@ export interface NotaFiscal {
   valor: number
   status: StatusNota
   enviadaEm?: string
-  prazo: string // ISO date
+  prazo: string // ISO date (dia 22)
+  pagamentoEm?: string // previsão / data de pagamento (dia 25)
   arquivo?: string
+  aprovadorId?: string
+  aprovadaEm?: string
+  pagaEm?: string
 }
 
 export type StatusAusencia = 'pendente' | 'aprovado' | 'recusado'
@@ -99,6 +120,8 @@ export interface Ausencia {
   criadoEm: string
 }
 
+export type AlvoComunicado = 'todos' | 'setores' | 'usuarios'
+
 export interface Comunicado {
   id: string
   titulo: string
@@ -109,6 +132,28 @@ export interface Comunicado {
   data: string
   fixado?: boolean
   lidoPor: string[] // ids
+  // Público-alvo
+  alvo: AlvoComunicado
+  setoresAlvo: string[] // ids de setores (quando alvo === 'setores')
+  usuariosAlvo: string[] // ids de colaboradores (quando alvo === 'usuarios')
+}
+
+/* ---------- Gamificação · Tarefas (Kanban) ---------- */
+export type StatusTarefa = 'disponivel' | 'andamento' | 'aprovacao' | 'concluida'
+
+export interface Tarefa {
+  id: string
+  titulo: string
+  descricao: string
+  pontos: number
+  status: StatusTarefa
+  responsavelId: string | null
+  criadaPor: string // id do gestor/admin
+  criadaEm: string
+  prazo?: string
+  prova?: string // nome do arquivo (foto/vídeo)
+  aprovadaPor?: string
+  concluidaEm?: string
 }
 
 export interface Evento {
@@ -193,6 +238,7 @@ export interface DB {
   treinamentos: Treinamento[]
   badges: Badge[]
   desafios: Desafio[]
+  tarefas: Tarefa[]
   notificacoes: Notificacao[]
   documentos: Documento[]
 }

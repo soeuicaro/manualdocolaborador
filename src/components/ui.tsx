@@ -5,11 +5,26 @@ import { type ReactNode, type ButtonHTMLAttributes, forwardRef } from 'react'
 import { cn } from '@/lib/utils'
 import * as Icons from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
+import logo4juris from '@/LOGO4JURIS.jpg'
 
 /* ---------- Ícone dinâmico por nome ---------- */
 export function Icon({ name, className }: { name: string; className?: string }) {
   const C = (Icons as unknown as Record<string, LucideIcon>)[name] ?? Icons.Circle
   return <C className={className} />
+}
+
+/* ---------- Logo oficial 4JURIS ---------- */
+export function Logo({ size = 38, className, rounded = 'rounded-xl' }: { size?: number; className?: string; rounded?: string }) {
+  return (
+    <img
+      src={logo4juris}
+      alt="4JURIS"
+      width={size}
+      height={size}
+      className={cn('object-contain shrink-0 shadow-brand', rounded, className)}
+      style={{ height: size, width: size }}
+    />
+  )
 }
 
 /* ---------- Button ---------- */

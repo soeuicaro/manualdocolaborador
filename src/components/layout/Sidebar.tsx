@@ -1,15 +1,18 @@
 import { NavLink } from 'react-router-dom'
 import { NAV } from '@/lib/nav'
 import { useStore } from '@/lib/store'
-import { Icon } from '@/components/ui'
-import { cn } from '@/lib/utils'
+import { Icon, Logo } from '@/components/ui'
+import { cn, podeVerReembolsosView } from '@/lib/utils'
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 
 export function Sidebar() {
   const collapsed = useStore((s) => s.sidebarCollapsed)
   const toggle = useStore((s) => s.toggleSidebar)
   const user = useStore((s) => s.currentUser())
+  const setores = useStore((s) => s.setores)
+  const preview = useStore((s) => s.previewColaborador)
   const papel = user.papel
+  const verReemb = podeVerReembolsosView(user, setores, preview)
 
   return (
     <aside
@@ -20,9 +23,7 @@ export function Sidebar() {
     >
       {/* Marca */}
       <div className={cn('flex items-center gap-3 px-5 h-[68px] shrink-0', collapsed && 'justify-center px-0')}>
-        <div className="h-[38px] w-[38px] rounded-xl bg-brand flex items-center justify-center text-white font-extrabold text-[15px] tracking-tighter shadow-brand shrink-0">
-          4J
-        </div>
+        <Logo size={38} />
         {!collapsed && (
           <div className="leading-none">
             <div className="text-[16px] font-extrabold text-white tracking-tight">4JURIS</div>
@@ -34,7 +35,9 @@ export function Sidebar() {
       {/* Navegação */}
       <nav className="flex-1 overflow-y-auto overflow-x-hidden px-3 pb-4 pt-1">
         {NAV.map((group) => {
-          const items = group.items.filter((i) => !i.papeis || i.papeis.includes(papel))
+          const items = group.items
+            .filter((i) => !i.papeis || i.papeis.includes(papel))
+            .filter((i) => i.to !== '/reembolsos' || verReemb)
           if (!items.length) return null
           return (
             <div key={group.title} className="mt-4 first:mt-1">
